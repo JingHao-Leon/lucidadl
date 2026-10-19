@@ -34,6 +34,14 @@ _sf = utils.sanitize_filename(_long_name)
 check("sanitize_filename keeps .flac", _sf.endswith(".flac"))
 check("sanitize_filename capped", len(_sf) <= 192)
 check("sanitize_filename strips bad chars", "/" not in utils.sanitize_filename("a/b:c.zip"))
+# A name that merely CONTAINS a dot ("Song. Extended Version Here") has no file
+# extension: the text after the last dot is part of the title and must survive
+# intact, and the name must not be truncated to a made-up extension.
+check("sanitize_filename keeps a dotted title intact",
+      utils.sanitize_filename("Song. Extended Version Here")
+      == "Song. Extended Version Here")
+check("sanitize_filename keeps a dotted title with a short tail",
+      utils.sanitize_filename("Mr. Blue Sky") == "Mr. Blue Sky")
 
 # services / country
 check("normalize amazon_music", normalize_service("amazon_music") == "amazon")
